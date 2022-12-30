@@ -22,28 +22,25 @@ const sortSongs = (songs: Song[]) => {
 };
 
 const compareSongs = (k1: string, k2: string) => {
-  // h: harmonic
   // k: key
+  // c: camelot (key has been converted to camelot)
 
-  let hk1: string = camelotKeys.get(k1) || "";
-  let hk2: string = camelotKeys.get(k2) || "";
-  if (hk1 === hk2) return 0;
+  let ck1: string = camelotKeys.get(k1) || "";
+  let ck2: string = camelotKeys.get(k2) || "";
+  if (ck1 === ck2) return 0;
 
   const letterMap: Map<string, number> = new Map([
     ["A", 0],
     ["B", 1],
   ]);
 
-  console.log(letterMap.get(hk1.slice(-1)))
-  const hk1x: number = parseInt(hk1.slice(0, -1));
-  const hk1y: number = letterMap.get(hk1.slice(-1))!;
-  const hk2x: number = parseInt(hk2.slice(0, -1));
-  const hk2y: number = letterMap.get(hk2.slice(-1))!;
+  const ck1x: number = parseInt(ck1.slice(0, -1));
+  const ck1y: number = letterMap.get(ck1.slice(-1))!;
+  const ck2x: number = parseInt(ck2.slice(0, -1));
+  const ck2y: number = letterMap.get(ck2.slice(-1))!;
 
-  if (hk1y === -1 || hk2y === -1) throw new Error("Invalid key");
-
-  const x: number = hk1x - hk2x;
-  const y: number = hk1y - hk2y;
+  const x: number = ck1x - ck2x;
+  const y: number = ck1y - ck2y;
 
   return Math.sqrt(x*x + y*y);
 }
