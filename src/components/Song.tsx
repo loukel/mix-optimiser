@@ -8,6 +8,12 @@ interface SongProps {
 }
 
 const Song = ({ name, artists, bpm, songKey }: SongProps) => {
+  const fn = () => {
+    console.log('fn called')
+  }
+  const map = new Map()
+  map.set(fn, fn)
+  map.get(fn)
   return ( 
     <div className="card bg-base-100 h-20 flex-row p-2 rounded-none shadow-xl mb-6 last:mb-0">
       <img src={album} className="m-0" />

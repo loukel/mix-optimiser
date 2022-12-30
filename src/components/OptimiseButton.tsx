@@ -1,9 +1,9 @@
-const SortButton = () => {
+const OptimiseButton = () => {
   return ( 
     <button className="btn btn-primary" disabled={false}>
-      Sort
+      Optimise
     </button>
   );
 }
  
-export default SortButton;
+export default OptimiseButton;

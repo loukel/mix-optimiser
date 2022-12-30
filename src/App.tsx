@@ -1,7 +1,7 @@
 import './App.css'
 import Menu from './components/Menu'
 import SongList from './components/SongList'
-import sortSongs from './sortSongs'
+import optimiseSongs from './optimiseSongs'
 import { Song } from "./types";
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
       key: 'Abm',
     },
   ];
-  console.log(sortSongs(songs));
+  console.log(optimiseSongs(songs));
 
   return (
     <div className="App">

@@ -3,7 +3,7 @@ import { camelotKeys } from "./utils/harmonicGraph";
 
 // ['Bbm', 'Fm', 'Abm', 'Abm', 'Dbm', 'Am', 'Fm', 'Eb', 'Em', 'F#m', 'F', 'Cm']
 
-const sortSongs = (songs: Song[]) => {
+const optimiseSongs = (songs: Song[]) => {
   const n = songs.length;
   let songMap: { [id: string]: [[id: string, distance :number]?] } = {};
   
@@ -47,4 +47,4 @@ const compareSongs = (k1: string, k2: string) => {
 
 
 
-export default sortSongs;
+export default optimiseSongs;
