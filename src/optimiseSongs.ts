@@ -3,8 +3,34 @@ import { camelotKeys } from "./utils/harmonicGraph";
 
 // ['Bbm', 'Fm', 'Abm', 'Abm', 'Dbm', 'Am', 'Fm', 'Eb', 'Em', 'F#m', 'F', 'Cm']
 
+const greedySongSearch = (songMap: { [id: string]: [[id: string, distance :number]?] }) => {  
+  const n = Object.keys(songMap).length
+  let optimised: Array<string> = [Object.keys(songMap)[0]];
+  let current: string = optimised[0];
+
+  for (let i = 0; i < n-1; i++) {
+    let best: string = ''
+    let bestDist: number = Infinity;
+    for (let j = 0; j < songMap[current].length; j++) {
+      if (songMap[current][j]![1] < bestDist) {
+        best = songMap[current][j]![0]
+        bestDist = songMap[current][j]![1]
+      }
+    }
+    current = best
+    optimised.push(current)
+  };
+
+  return optimised
+}
+
 const optimiseSongs = (songs: Song[]) => {
   const n = songs.length;
+
+  if (n <= 1) {
+    return songs
+  }
+
   let songMap: { [id: string]: [[id: string, distance :number]?] } = {};
   
   for (let i = 0; i < n; i++) {
@@ -18,7 +44,15 @@ const optimiseSongs = (songs: Song[]) => {
       songMap[songs[j].id].push([songs[i].id, keyDistance])
     }
   }
-  return songMap;
+  
+  // Nearest neighbour search
+  let optimised = greedySongSearch(songMap)
+
+  // Local search (2-opt)
+  
+
+  // Replace list with actual songs
+  return optimised.map(id => songs.filter(song => song.id === id)[0])
 };
 
 const compareSongs = (k1: string, k2: string) => {
