@@ -2,11 +2,11 @@ import './App.css'
 import Menu from './components/Menu'
 import SongList from './components/SongList'
 import optimiseSongs from './optimiseSongs'
-import { Song } from "./types";
+import { ISong } from "./types";
 
 function App() {
   // const songs = ['Bbm', 'Fm', 'Abm', 'Abm', 'Dbm', 'Am', 'Fm', 'Eb', 'Em', 'F#m', 'F', 'Cm'];
-  const songs: Song[] = [
+  const songs: ISong[] = [
     {
       id: crypto.randomUUID(),
       name: 'Timewarp',
@@ -27,7 +27,28 @@ function App() {
       name: 'I Need to Feel',
       key: 'Abm',
     },
+    {
+      id: crypto.randomUUID(),
+      name: 'Safe in Sound',
+      key: 'Am',
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'Infinite Freedom',
+      key: 'F#m',
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'UK',
+      key: 'Cm',
+    },
+    {
+      id: crypto.randomUUID(),
+      name: 'Vino Bandit',
+      key: 'Abm',
+    },
   ];
+  console.log('og', songs)
   console.log(optimiseSongs(songs));
 
   return (

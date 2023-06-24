@@ -1,55 +1,104 @@
-import { Song } from "./types";
+import { ISong, ISongMap } from "./types";
 import { camelotKeys } from "./utils/harmonicGraph";
 
 // ['Bbm', 'Fm', 'Abm', 'Abm', 'Dbm', 'Am', 'Fm', 'Eb', 'Em', 'F#m', 'F', 'Cm']
 
-const greedySongSearch = (songMap: { [id: string]: [[id: string, distance :number]?] }) => {  
-  const n = Object.keys(songMap).length
-  let optimised: Array<string> = [Object.keys(songMap)[0]];
-  let current: string = optimised[0];
+const calcDist = (songsTour: string[], songMap: ISongMap) : number => {
+  let dist: number = 0;
 
-  for (let i = 0; i < n-1; i++) {
-    let best: string = ''
-    let bestDist: number = Infinity;
-    for (let j = 0; j < songMap[current].length; j++) {
-      if (songMap[current][j]![1] < bestDist) {
-        best = songMap[current][j]![0]
-        bestDist = songMap[current][j]![1]
-      }
-    }
-    current = best
-    optimised.push(current)
-  };
+  for (let i = 0; i < songsTour.length - 1; i++) {
+    dist += songMap[songsTour[i]][songsTour[i+1]]
+  }
 
-  return optimised
+  // Optional addition
+  // This complete the loop - this means the user can select where the optimised list starts
+  dist += songMap[songsTour[0]][songsTour[songsTour.length-1]]
+
+  return dist
 }
 
-const optimiseSongs = (songs: Song[]) => {
+const greedySearch = (songMap: ISongMap) : string[] => {  
+  const n = Object.keys(songMap).length;
+  let songs = Object.keys(songMap);
+  let current: string = songs.shift()!;
+  let optimised: string[] = [current];
+
+  for (let i = 0; i < n-1; i++) {
+    let best: string = '';
+    let bestDist: number = Infinity;
+    songs.forEach(songId => {
+      best = songId;
+      bestDist = songMap[current][songId];
+    });
+    const index = songs.indexOf(best);
+    delete songs[index];
+    current = best;
+    optimised.push(current);
+  };
+
+  return optimised;
+}
+
+const opt2Swap = (songIds: string[], cut1: number, cut2: number) : string[] => {
+  let optimised: string[] = [];
+
+  // Keep the first c1 of the list
+  optimised = songIds.slice(0, cut1);
+
+  // Reverse the list from c1 to c2
+  optimised.push(...songIds.slice(cut1, cut2).reverse());
+  // console.log(cut1, cut2)
+
+  // Keep the list the same from c2
+  optimised.push(...songIds.slice(cut2));
+
+  return optimised;
+}
+
+const localSearch = (songIds: string[], bestDist: number, songMap: ISongMap) : [string[], number] => {
+  let newTour : string[] = songIds;
+  
+  for (let i = 0; i < songIds.length; i++) {
+    for (let j = i+1; j < songIds.length; j++) {
+      newTour = opt2Swap(songIds, i, j);
+      let newDist = calcDist(songIds, songMap);
+
+      if (newDist < bestDist) {
+        return localSearch(newTour, newDist, songMap);
+      }
+    }
+  }
+
+  return [newTour, bestDist];
+}
+
+const optimiseSongs = (songs: ISong[]) => {
   const n = songs.length;
 
   if (n <= 1) {
     return songs
   }
 
-  let songMap: { [id: string]: [[id: string, distance :number]?] } = {};
+  let songMap: ISongMap = {};
   
   for (let i = 0; i < n; i++) {
-    songMap[songs[i].id] = [];
+    songMap[songs[i].id] = {};
   }
 
   for (let i = n-1; i > 0; i--) {
     for (let j = 0; j < i; j++) {
       const keyDistance: number = compareSongs(songs[i].key, songs[j].key);
-      songMap[songs[i].id].push([songs[j].id, keyDistance]);
-      songMap[songs[j].id].push([songs[i].id, keyDistance])
+      songMap[songs[i].id] = { ...songMap[songs[i].id], [songs[j].id]: keyDistance };
+      songMap[songs[j].id] = { ...songMap[songs[j].id], [songs[i].id]: keyDistance };
     }
   }
   
   // Nearest neighbour search
-  let optimised = greedySongSearch(songMap)
+  let optimised: string[] = greedySearch(songMap);
+  let dist: number;
 
-  // Local search (2-opt)
-  
+  // Local search (with 2-opt)
+  [optimised, dist] = localSearch(optimised, calcDist(optimised, songMap), songMap)
 
   // Replace list with actual songs
   return optimised.map(id => songs.filter(song => song.id === id)[0])
