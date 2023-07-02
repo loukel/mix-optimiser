@@ -48,8 +48,8 @@ function App() {
       key: 'Abm',
     },
   ];
-  console.log('og', songs)
-  console.log(optimiseSongs(songs));
+  // console.log('og', songs)
+  // console.log(optimiseSongs(songs));
 
   return (
     <div className="App">
