@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const UploadButton = () => {
+  var jsmediatags = (window as any).jsmediatags;
   const ref = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<FileList | null>(null);
 
@@ -13,7 +14,16 @@ const UploadButton = () => {
 
   useEffect(() => {
     if (files !== null) {
-      console.log(files);
+      for (let i = 0; i < files.length; i++) {
+        console.log(jsmediatags.read(files[i], {
+          onSuccess: function(tag: any) {
+            console.log(tag);
+          },
+          onError: function(error: any) {
+            console.log(error);
+          }
+        }));
+      }
     };
   }, [files])
 
