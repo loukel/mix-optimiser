@@ -62,21 +62,37 @@ function App() {
   // console.log(optimiseSongs(songs));
   const onSubmit = (e) => {
     e.preventDefault()
-    let { name, keyNumber, keyChar } = e.target
+    let { name, keyNumber, keyChar, bpm } = e.target
 
     const key = `${keyNumber.value}${keyChar.value}`
     name = name.value
+    bpm = bpm.value
 
     let newSong = {
       id: crypto.randomUUID(),
       name,
       key,
+      bpm,
     }
     e.target.reset()
     let newSongs = [...songs]
     newSongs.push(newSong)
 
-    setSongs(newSongs)
+    setSongs(optimiseSongs(newSongs))
+  }
+
+  const updateName = (id, name) => {
+    let newSongs = structuredClone(songs)
+    let song = newSongs.find((song) => song.id === id)
+    song.name = name
+    setSongs(optimiseSongs(newSongs))
+  }
+
+  const removeSong = (id) => {
+    let newSongs = structuredClone(songs)
+    let index = newSongs.findIndex((song) => song.id === id)
+    newSongs.splice(index, 1)
+    setSongs(optimiseSongs(newSongs))
   }
 
   return (
@@ -121,14 +137,27 @@ function App() {
               <option value={'B'}>B</option>
             </select>
           </div>
+          <input
+            name={'bpm'}
+            className='input input-bordered w-full max-w-xs'
+            placeholder={'bpm'}
+          />
           <button className={'btn'} type='submit'>
             Add
           </button>
         </form>
         <div className='mt-5 w-1/2 flex gap-5 flex-col'>
-          {optimiseSongs(songs).map((song, index) => (
+          {songs.map((song, index) => (
             <div>
-              <Song name={song.name} songKey={song.key} />
+              <Song
+                id={song.id}
+                name={song.name}
+                songKey={song.key}
+                bpm={song.bpm}
+                index={index}
+                updateName={updateName}
+                removeSong={removeSong}
+              />
               {index < songs.length - 1 && (
                 <div>{compareSongs(song.key, songs[index + 1].key)}</div>
               )}

@@ -1,4 +1,4 @@
-// import { camelotKeys } from './utils/harmonicGraph'
+import { harmonicWheel } from './utils/harmonicGraph'
 
 // ['Bbm', 'Fm', 'Abm', 'Abm', 'Dbm', 'Am', 'Fm', 'Eb', 'Em', 'F#m', 'F', 'Cm']
 
@@ -123,28 +123,50 @@ const optimiseSongs = (songs) => {
   return optimised.map((id) => songs.filter((song) => song.id === id)[0])
 }
 
-const compareSongs = (ck1, ck2) => {
-  // k: key
-  // c: camelot (key has been converted to camelot)
+// const compareSongs = (ck1, ck2) => {
+//   // k: key
+//   // c: camelot (key has been converted to camelot)
 
-  // let ck1 = camelotKeys.get(k1) || ''
-  // let ck2 = camelotKeys.get(k2) || ''
-  if (ck1 === ck2) return 0
+//   // let ck1 = camelotKeys.get(k1) || ''
+//   // let ck2 = camelotKeys.get(k2) || ''
+//   if (ck1 === ck2) return 0
 
-  const letterMap = new Map([
-    ['A', 0],
-    ['B', 1],
-  ])
+//   const letterMap = new Map([
+//     ['A', 0],
+//     ['B', 1],
+//   ])
 
-  const ck1x = parseInt(ck1.slice(0, -1))
-  const ck1y = letterMap.get(ck1.slice(-1))
-  const ck2x = parseInt(ck2.slice(0, -1))
-  const ck2y = letterMap.get(ck2.slice(-1))
+//   const ck1x = parseInt(ck1.slice(0, -1))
+//   const ck1y = letterMap.get(ck1.slice(-1))
+//   const ck2x = parseInt(ck2.slice(0, -1))
+//   const ck2y = letterMap.get(ck2.slice(-1))
 
-  const x = ck1x - ck2x
-  const y = ck1y - ck2y
+//   const x = ck1x - ck2x
+//   const y = ck1y - ck2y
 
-  return Math.abs(x) + Math.abs(y)
+//   return Math.abs(x) + Math.abs(y)
+// }
+
+function compareSongs(key1, key2) {
+  const queue = [{ key: key1, distance: 0 }]
+  const visited = new Set([key1])
+
+  while (queue.length > 0) {
+    const { key, distance } = queue.shift()
+
+    if (key === key2) {
+      return distance
+    }
+
+    for (const nextKey of harmonicWheel[key]) {
+      if (!visited.has(nextKey)) {
+        visited.add(nextKey)
+        queue.push({ key: nextKey, distance: distance + 1 })
+      }
+    }
+  }
+
+  throw new Error('Invalid key pair or unreachable keys.')
 }
 
 export { optimiseSongs, compareSongs }
